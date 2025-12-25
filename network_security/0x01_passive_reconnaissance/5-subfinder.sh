@@ -1,2 +1,2 @@
 #!/bin/bash
-subfinder -d $1 -ip -silent | awk '{gsub(/[\[\]]/,""); print $1","$2}' > $1.csv
+subfinder -d $1 -silent -o $1.txt -nW -oI
