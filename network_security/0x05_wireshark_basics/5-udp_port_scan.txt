@@ -1,1 +1,1 @@
-icmp contains "Destination unreachable"
+icmp.type == 3
