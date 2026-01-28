@@ -1,1 +1,1 @@
-https://apexcharts.com/dist/
+http://jqueryui.com/themeroller/
