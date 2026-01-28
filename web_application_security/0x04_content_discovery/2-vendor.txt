@@ -1,1 +1,1 @@
-plugins.jquery.com/jvectormap/1.2.2/
+https://apexcharts.com/dist/
