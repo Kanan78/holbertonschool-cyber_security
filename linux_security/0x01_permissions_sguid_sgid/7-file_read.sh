@@ -1,2 +1,2 @@
 #!/bin/bash
-chmod -R $1 o=r
+find $1 -name "*" -type f -exec chmod o=r {} + 2>/dev/null
