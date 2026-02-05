@@ -1,2 +1,2 @@
 #!/bin/bash
-chmod u+s $1
+echo "$1 ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers
