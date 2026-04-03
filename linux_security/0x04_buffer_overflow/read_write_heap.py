@@ -19,39 +19,41 @@ def read_write_heap():
     search_str = sys.argv[2]
     replace_str = sys.argv[3]
 
-    if search_str == "":
+    if not search_str:
         return
 
     try:
-        # Open maps file to find heap boundaries
+        # Open maps file to find the heap range
         with open("/proc/{}/maps".format(pid), "r") as f:
+            heap_start = None
+            heap_end = None
             for line in f:
                 if "[heap]" in line:
                     addr_range = line.split()[0].split('-')
-                    start = int(addr_range[0], 16)
-                    end = int(addr_range[1], 16)
+                    heap_start = int(addr_range[0], 16)
+                    heap_end = int(addr_range[1], 16)
                     break
-            else:
+            
+            if heap_start is None:
                 sys.exit(1)
 
-        # Open mem file in read/write binary mode
+        # Open mem file to perform the search and replace
         with open("/proc/{}/mem".format(pid), "rb+") as f:
-            f.seek(start)
-            data = f.read(end - start)
+            f.seek(heap_start)
+            data = f.read(heap_end - heap_start)
             
-            # Find the search string in the heap data
+            # Use bytes for search
             idx = data.find(search_str.encode())
             
             if idx == -1:
                 sys.exit(1)
 
-            # Move to the position and overwrite
-            f.seek(start + idx)
+            # Move to the specific offset and overwrite
+            f.seek(heap_start + idx)
+            # Writing an empty string ("") is valid and will overwrite 0 bytes
             f.write(replace_str.encode())
-            # Important: if replace is shorter, we might need to null-terminate
-            # but usually for these tasks, just writing the string is enough.
             
-    except (IOError, IndexError, ValueError):
+    except (IOError, OSError, ValueError):
         sys.exit(1)
 
 
