@@ -20,39 +20,49 @@ def read_write_heap():
     replace_str = sys.argv[3]
 
     if not search_str:
-        return
+        sys.exit(1)
 
     try:
-        # Open maps file to find the heap range
-        with open("/proc/{}/maps".format(pid), "r") as f:
+        # Heap aralığını tap
+        with open(f"/proc/{pid}/maps", "r") as f:
             heap_start = None
             heap_end = None
+
             for line in f:
                 if "[heap]" in line:
                     addr_range = line.split()[0].split('-')
                     heap_start = int(addr_range[0], 16)
                     heap_end = int(addr_range[1], 16)
                     break
-            
+
             if heap_start is None:
                 sys.exit(1)
 
-        # Open mem file to perform the search and replace
-        with open("/proc/{}/mem".format(pid), "rb+") as f:
+        # Heap-i oxu və dəyiş
+        with open(f"/proc/{pid}/mem", "rb+") as f:
             f.seek(heap_start)
             data = f.read(heap_end - heap_start)
-            
-            # Use bytes for search
-            idx = data.find(search_str.encode())
-            
+
+            search_bytes = search_str.encode()
+            idx = data.find(search_bytes)
+
             if idx == -1:
                 sys.exit(1)
 
-            # Move to the specific offset and overwrite
+            replace_bytes = replace_str.encode()
+
+            # 🔧 Əsas fix burada
+            if len(replace_bytes) == 0:
+                replace_bytes = b'\x00' * len(search_bytes)
+            elif len(replace_bytes) < len(search_bytes):
+                replace_bytes += b'\x00' * (len(search_bytes) - len(replace_bytes))
+            elif len(replace_bytes) > len(search_bytes):
+                replace_bytes = replace_bytes[:len(search_bytes)]
+
+            # Yaz
             f.seek(heap_start + idx)
-            # Writing an empty string ("") is valid and will overwrite 0 bytes
-            f.write(replace_str.encode())
-            
+            f.write(replace_bytes)
+
     except (IOError, OSError, ValueError):
         sys.exit(1)
 
