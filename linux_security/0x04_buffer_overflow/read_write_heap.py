@@ -8,8 +8,8 @@ import sys
 
 def read_write_heap():
     """
-    Finds and replaces a search_string with a replace_string in the
-    heap of the process identified by pid.
+    Finds and replaces a search_string with a replace_string
+    in the heap of the process identified by pid.
     """
     if len(sys.argv) != 4:
         print("Usage: read_write_heap.py pid search replace")
@@ -51,13 +51,16 @@ def read_write_heap():
 
             replace_bytes = replace_str.encode()
 
-            # 🔧 Əsas fix burada
-            if len(replace_bytes) == 0:
-                replace_bytes = b'\x00' * len(search_bytes)
-            elif len(replace_bytes) < len(search_bytes):
-                replace_bytes += b'\x00' * (len(search_bytes) - len(replace_bytes))
-            elif len(replace_bytes) > len(search_bytes):
-                replace_bytes = replace_bytes[:len(search_bytes)]
+            search_len = len(search_bytes)
+            replace_len = len(replace_bytes)
+
+            if replace_len == 0:
+                replace_bytes = b'\x00' * search_len
+            elif replace_len < search_len:
+                diff = search_len - replace_len
+                replace_bytes += b'\x00' * diff
+            elif replace_len > search_len:
+                replace_bytes = replace_bytes[:search_len]
 
             # Yaz
             f.seek(heap_start + idx)
