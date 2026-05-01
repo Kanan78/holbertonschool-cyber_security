@@ -1,0 +1,39 @@
+In our last post, we discussed the tools used to find vulnerabilities. Today, we dive into one of the most persistent and dangerous categories of those vulnerabilities: Injection Attacks. For years, these have dominated the top of the OWASP Top 10 list, and for a good reason—they are relatively easy to execute but can lead to a total system compromise.
+
+Introduction to Injection Attacks: When Data Becomes Code
+An injection attack occurs when untrusted data is sent to an interpreter as part of a command or query. The attacker’s hostile data "tricks" the interpreter into executing unintended commands or accessing data without proper authorization.
+
+Common Types of Injection Attacks
+SQL Injection (SQLi): The most infamous type. An attacker inserts malicious SQL code into an input field (like a login form). If the application doesn't filter this, the database might execute a command like SELECT * FROM users;, leaking every user's credentials.
+
+Scenario: A search bar that takes your input and places it directly into a database query string.
+
+Cross-Site Scripting (XSS): This is essentially "JavaScript Injection." The attacker injects malicious scripts into web pages viewed by other users. This can be used to steal session cookies or deface websites.
+
+Scenario: A comment section that doesn't sanitize HTML, allowing an attacker to post a <script> tag that runs in every visitor's browser.
+
+Command Injection: Here, the attacker aims to execute arbitrary commands on the host operating system. This is devastating because it gives the attacker the same power as the user running the application.
+
+Scenario: A web-based "ping" tool that takes an IP address from the user and passes it directly to the OS shell. An attacker could input 127.0.0.1; rm -rf /.
+
+Preventing Injection Attacks: Building the Fortress
+Mitigating injection attacks is not about one single tool; it is about adopting a "Security by Design" mindset. Here are the essential strategies:
+
+1. Use Prepared Statements (Parameterized Queries)
+This is the #1 defense against SQLi. Instead of building a query string with user input, you use "placeholders." The database treats the user input strictly as data, never as executable code.
+
+2. Input Validation and Sanitization
+Never trust user input.
+
+Validation: Ensure the input matches the expected format (e.g., an age field must be a number).
+
+Sanitization: Strip out dangerous characters (like <, >, or ;) before the data is processed.
+
+3. Use Safe APIs and Escaping
+When rendering data in a browser, use "escaping" to ensure the browser treats the data as plain text rather than HTML or JavaScript. Modern frameworks like React or Angular do much of this automatically, which is why they are preferred for secure development.
+
+4. The Principle of Least Privilege
+Ensure that the database or application has only the minimum permissions necessary to function. If a web app only needs to read from a database, its connection should not have delete or drop table permissions.
+
+Conclusion and Teaser
+Injection attacks remain a significant threat because they target the bridge between the user and the server. By understanding that user input should never be trusted, and by implementing parameterized queries and strict validation, developers can shut the door on these exploits. Protecting your data starts with controlling how your application talks to its backend.
