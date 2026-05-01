@@ -1,0 +1,54 @@
+In our previous post, we looked at how Injection attacks trick a server into executing malicious code. Today, we explore a vulnerability that doesn't target the server's code, but rather the trust that a server has in a user's browser. Welcome to the world of Cross-Site Request Forgery (CSRF).
+
+Introduction to CSRF: The Unintended Action
+Cross-Site Request Forgery (CSRF) is a web security vulnerability that allows an attacker to induce users to perform actions that they do not intend to perform.
+
+Unlike many other attacks, CSRF doesn't aim to steal data directly (as the attacker has no way to see the response to the forged request). Instead, it targets state-changing requests, such as changing a password, transferring funds, or updating an email address.
+
+How it operates:
+
+Authentication: A user logs into a legitimate site (e.g., bank.com) and receives a session cookie.
+
+The Trap: While the session is still active, the user visits a malicious website (or clicks a link in a phishing email).
+
+The Forgery: The malicious site contains a hidden request (like an invisible form or an image tag) directed at [bank.com/transfer?amount=1000&to=attacker](https://bank.com/transfer?amount=1000&to=attacker).
+
+Execution: Because the user is already logged in, the browser automatically includes the bank.com session cookies with the request. The bank’s server sees the valid cookies and processes the transfer, thinking the user authorized it.
+
+Historical Context: The "Sleeping Giant" of Web Security
+CSRF was once referred to as the "sleeping giant" of web vulnerabilities. In the early days of the web, developers assumed that as long as a request came with a valid session cookie, it must be legitimate.
+
+Awareness grew significantly in the mid-2000s. In 2007, a famous CSRF vulnerability was found in Gmail that allowed attackers to steal a user's contact list by simply tricking them into visiting a website. Since then, web frameworks have evolved to include built-in protections, moving CSRF from a common nightmare to a manageable risk—provided developers know how to handle it.
+
+The Impact: Consequences of Forged Trust
+The impact of a successful CSRF attack depends entirely on the nature of the targeted application. Potential risks include:
+
+Account Takeover: Changing the user's password or recovery email address.
+
+Financial Loss: Unauthorized fund transfers or fraudulent purchases.
+
+Data Manipulation: Deleting records, changing privacy settings, or posting content on social media without the user's consent.
+
+Impact on Organizations: For technology-driven businesses, a CSRF vulnerability can lead to massive reputational damage and legal liabilities if customer data or accounts are compromised.
+
+Mitigation Strategies: Cutting the Puppet Strings
+Preventing CSRF is about ensuring that a request is not just coming from a logged-in browser, but that it was explicitly intended by the user.
+
+1. Anti-CSRF Tokens (Synchronizer Token Pattern)
+The most common and effective defense. The server generates a unique, cryptographically strong, and unpredictable token for the user's session. This token must be included in any state-changing request (like a POST request). Because the attacker’s site cannot "read" this token due to the Same-Origin Policy (SOP), they cannot forge a valid request.
+
+2. SameSite Cookie Attribute
+This is a modern and highly effective browser-level defense. By setting the SameSite attribute on cookies to Lax or Strict, you tell the browser not to send the cookie during cross-site requests.
+
+Strict: The cookie is only sent if the request originates from the same site where the cookie was created.
+
+Lax: A balance that provides security while maintaining usability (e.g., allowing cookies on top-level navigations from external sites).
+
+3. Double Submit Cookies
+For applications that don't want to maintain state on the server, a random value is sent both in a cookie and as a request parameter. The server then verifies that the two values match.
+
+4. Custom Request Headers
+Using AJAX/Fetch to add custom headers (like X-Requested-With) can prevent CSRF because browsers restrict the ability of cross-site requests to add custom headers without explicit permission (CORS).
+
+Conclusion and Teaser
+CSRF reminds us that security is not just about protecting the server, but about protecting the integrity of the user's session. As developers and security professionals, we must be proactive. Review your applications today: Are your cookies set to SameSite=Lax? Are you using anti-CSRF tokens for every form?
