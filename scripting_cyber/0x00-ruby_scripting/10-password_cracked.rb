@@ -10,7 +10,7 @@ def crack_password(hashed_password, dictionary_file)
       return
     end
   end
-  puts 'Password was not found in dictionary.'
+  puts 'Password not found in dictionary.'
 end
 
 if ARGV.length < 2
