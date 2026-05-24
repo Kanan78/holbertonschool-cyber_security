@@ -14,6 +14,7 @@ def list_tasks
   return puts 'No tasks found.' unless File.exist?(TASKS_FILE)
 
   tasks = File.readlines(TASKS_FILE, chomp: true)
+  puts "Tasks:"
   tasks.each_with_index do |task, index|
     puts "#{index + 1}. #{task}"
   end
